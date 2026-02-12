@@ -1,0 +1,122 @@
+.trade-detail-page {
+    animation: fadeIn 0.3s ease;
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.detail-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+}
+
+.detail-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-card h2 {
+    font-size: 1.125rem;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.detail-value.price {
+    font-size: 1.125rem;
+    font-family: 'Courier New', monospace;
+}
+
+.detail-value.market-stage {
+    font-size: 0.875rem;
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
+.rr-ratio {
+    color: var(--accent-primary);
+    font-size: 1.25rem;
+}
+
+.notes-content {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    background: var(--bg-tertiary);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.chart-image-container {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.chart-image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions button,
+    .header-actions a {
+        flex: 1;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .page-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
