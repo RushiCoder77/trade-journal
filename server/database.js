@@ -57,6 +57,17 @@ export function setupDatabase() {
   `
   db.exec(createRulesTableSQL)
 
+  // Create users table
+  const createUsersTableSQL = `
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    )
+  `
+  db.exec(createUsersTableSQL)
+
   // Migration: Add image column to trading_rules if it doesn't exist (safety check)
   try {
     const tableInfo = db.prepare("PRAGMA table_info(trading_rules)").all()
@@ -73,6 +84,32 @@ export function setupDatabase() {
 
   console.log('✅ Database initialized')
 }
+
+// ... existing trades functions (getAllTrades, etc.) ...
+
+// --- Users Functions ---
+
+export function getUser(username) {
+  const stmt = db.prepare('SELECT * FROM users WHERE username = ?')
+  return stmt.get(username)
+}
+
+export function registerUser(username, hashedPassword) {
+  const id = Date.now().toString()
+  const createdAt = new Date().toISOString()
+
+  const stmt = db.prepare('INSERT INTO users (id, username, password, createdAt) VALUES (?, ?, ?, ?)')
+  try {
+    stmt.run(id, username, hashedPassword, createdAt)
+    return id
+  } catch (error) {
+    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      throw new Error('Username already exists')
+    }
+    throw error
+  }
+}
+
 
 // Get all trades
 export function getAllTrades() {

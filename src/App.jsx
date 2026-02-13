@@ -1,14 +1,22 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom'
 import Dashboard from './components/Dashboard'
 import TradeForm from './components/TradeForm'
 import TradesList from './components/TradesList'
 import TradeDetail from './components/TradeDetail'
 import TradingRules from './components/TradingRules'
+import Login from './components/Login'
 import { TradesProvider } from './context/TradesContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import './App.css'
+
+function PrivateRoute({ children }) {
+    const { user } = useAuth()
+    return user ? children : <Navigate to="/login" />
+}
 
 function Navigation() {
     const location = useLocation()
+    const { logout } = useAuth()
 
     const isActive = (path) => location.pathname === path
 
@@ -31,31 +39,44 @@ function Navigation() {
                     <Link to="/" className={isActive('/') ? 'active' : ''}>Dashboard</Link>
                     <Link to="/new-trade" className={isActive('/new-trade') ? 'active' : ''}>New Trade</Link>
                     <Link to="/trades" className={isActive('/trades') ? 'active' : ''}>All Trades</Link>
+                    <button onClick={logout} className="btn-logout" title="Logout">🚪</button>
                 </div>
             </div>
         </nav>
     )
 }
 
+function AppContent() {
+    const { user } = useAuth()
+
+    return (
+        <div className="app">
+            {user && <Navigation />}
+            <main className="main-content">
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+
+                    <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+                    <Route path="/rules" element={<PrivateRoute><TradingRules /></PrivateRoute>} />
+                    <Route path="/new-trade" element={<PrivateRoute><TradeForm /></PrivateRoute>} />
+                    <Route path="/edit-trade/:id" element={<PrivateRoute><TradeForm /></PrivateRoute>} />
+                    <Route path="/trades" element={<PrivateRoute><TradesList /></PrivateRoute>} />
+                    <Route path="/trade/:id" element={<PrivateRoute><TradeDetail /></PrivateRoute>} />
+                </Routes>
+            </main>
+        </div>
+    )
+}
+
 function App() {
     return (
-        <TradesProvider>
-            <Router>
-                <div className="app">
-                    <Navigation />
-                    <main className="main-content">
-                        <Routes>
-                            <Route path="/" element={<Dashboard />} />
-                            <Route path="/rules" element={<TradingRules />} />
-                            <Route path="/new-trade" element={<TradeForm />} />
-                            <Route path="/edit-trade/:id" element={<TradeForm />} />
-                            <Route path="/trades" element={<TradesList />} />
-                            <Route path="/trade/:id" element={<TradeDetail />} />
-                        </Routes>
-                    </main>
-                </div>
-            </Router>
-        </TradesProvider>
+        <AuthProvider>
+            <TradesProvider>
+                <Router>
+                    <AppContent />
+                </Router>
+            </TradesProvider>
+        </AuthProvider>
     )
 }
 

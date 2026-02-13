@@ -3,11 +3,15 @@ const API_BASE_URL = '/api'
 // Helper function for API calls
 async function apiCall(endpoint, options = {}) {
     try {
+        const token = localStorage.getItem('token')
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` }),
+            ...options.headers,
+        }
+
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers,
-            },
+            headers,
             ...options,
         })
 
@@ -137,4 +141,22 @@ export async function deleteRule(id) {
     return await apiCall(`/rules/${id}`, {
         method: 'DELETE'
     })
+}
+
+// --- Auth API ---
+
+export async function loginUser(credentials) {
+    const response = await apiCall('/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials)
+    })
+    return response
+}
+
+export async function registerUser(credentials) {
+    const response = await apiCall('/register', {
+        method: 'POST',
+        body: JSON.stringify(credentials)
+    })
+    return response
 }
