@@ -1,0 +1,143 @@
+.rules-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.rules-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.rules-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* Left: Form */
+.rules-form-card {
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.rules-form-card h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.image-preview-area {
+    margin-top: 1rem;
+    width: 100%;
+    height: 200px;
+    border: 2px dashed var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: var(--bg-tertiary);
+}
+
+.image-preview-area img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.preview-placeholder {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* Right: List */
+.rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.rule-card {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.rule-card:hover {
+    border-color: var(--accent-primary);
+}
+
+.rule-header {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-tertiary);
+}
+
+.rule-number {
+    background-color: var(--accent-primary);
+    color: #000;
+    font-weight: bold;
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.btn-delete-icon {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.btn-delete-icon:hover {
+    color: var(--danger);
+}
+
+.rule-content {
+    padding: 1.5rem;
+}
+
+.rule-text {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+}
+
+.rule-image {
+    margin-top: 1rem;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.rule-image img {
+    width: 100%;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .rules-container {
+        grid-template-columns: 1fr;
+    }
+
+    .rules-form-card {
+        position: static;
+    }
+}

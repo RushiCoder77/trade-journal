@@ -117,3 +117,24 @@ export async function checkServerHealth() {
         return false
     }
 }
+
+// --- Rules API ---
+
+export async function fetchRules() {
+    const response = await apiCall('/rules')
+    return response.data
+}
+
+export async function addRule(ruleData) {
+    const response = await apiCall('/rules', {
+        method: 'POST',
+        body: JSON.stringify(ruleData)
+    })
+    return response.data
+}
+
+export async function deleteRule(id) {
+    return await apiCall(`/rules/${id}`, {
+        method: 'DELETE'
+    })
+}

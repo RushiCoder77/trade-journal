@@ -46,6 +46,31 @@ export function setupDatabase() {
     console.error('Migration error:', error)
   }
 
+  // Create trading_rules table
+  const createRulesTableSQL = `
+    CREATE TABLE IF NOT EXISTS trading_rules (
+      id TEXT PRIMARY KEY,
+      ruleText TEXT NOT NULL,
+      image TEXT,
+      createdAt TEXT NOT NULL
+    )
+  `
+  db.exec(createRulesTableSQL)
+
+  // Migration: Add image column to trading_rules if it doesn't exist (safety check)
+  try {
+    const tableInfo = db.prepare("PRAGMA table_info(trading_rules)").all()
+    const hasImage = tableInfo.some(column => column.name === 'image')
+
+    if (!hasImage) {
+      console.log('⚙️  Adding image column to existing trading_rules table...')
+      db.exec('ALTER TABLE trading_rules ADD COLUMN image TEXT')
+      console.log('✅ Migration complete: image column added')
+    }
+  } catch (error) {
+    console.error('Migration error:', error)
+  }
+
   console.log('✅ Database initialized')
 }
 
@@ -176,6 +201,36 @@ export function getStats() {
   const avgRR = rrCount > 0 ? (totalRR / rrCount).toFixed(2) : 0
 
   return { total, wins, losses, winRate, avgRR }
+}
+
+// --- Trading Rules Functions ---
+
+// Get all rules
+export function getAllRules() {
+  const stmt = db.prepare('SELECT * FROM trading_rules ORDER BY createdAt DESC')
+  return stmt.all()
+}
+
+// Add new rule
+export function addRule(ruleData) {
+  const id = Date.now().toString()
+  const createdAt = new Date().toISOString()
+
+  // Use ruleText consistently
+  const ruleText = ruleData.ruleText || ruleData.rule || ''
+  const image = ruleData.image || null
+
+  const stmt = db.prepare('INSERT INTO trading_rules (id, ruleText, image, createdAt) VALUES (?, ?, ?, ?)')
+  const info = stmt.run(id, ruleText, image, createdAt)
+
+  return id
+}
+
+// Delete rule
+export function deleteRule(id) {
+  const stmt = db.prepare('DELETE FROM trading_rules WHERE id = ?')
+  const info = stmt.run(id)
+  return info.changes > 0
 }
 
 export default db

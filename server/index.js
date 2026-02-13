@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { setupDatabase, getAllTrades, getTrade, createTrade, updateTrade, deleteTrade } from './database.js'
+import { setupDatabase, getAllTrades, getTrade, createTrade, updateTrade, deleteTrade, getAllRules, addRule, deleteRule } from './database.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -83,6 +83,39 @@ app.delete('/api/trades/:id', (req, res) => {
         res.json({ success: true, message: 'Trade deleted successfully' })
     } catch (error) {
         console.error('Error deleting trade:', error)
+        res.status(500).json({ success: false, error: error.message })
+    }
+})
+
+// --- Rules Routes ---
+
+app.get('/api/rules', (req, res) => {
+    try {
+        const rules = getAllRules()
+        res.json({ success: true, data: rules })
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message })
+    }
+})
+
+app.post('/api/rules', (req, res) => {
+    try {
+        const id = addRule(req.body)
+        res.status(201).json({ success: true, data: { id, ...req.body } })
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message })
+    }
+})
+
+app.delete('/api/rules/:id', (req, res) => {
+    try {
+        const deleted = deleteRule(req.params.id)
+        if (deleted) {
+            res.json({ success: true })
+        } else {
+            res.status(404).json({ success: false, error: 'Rule not found' })
+        }
+    } catch (error) {
         res.status(500).json({ success: false, error: error.message })
     }
 })
