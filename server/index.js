@@ -53,7 +53,7 @@ app.post('/api/register', async (req, res) => {
         // In production, disable public registration or add admin check
         // For now, allow registration if no users exist or simple open registration
         const hashedPassword = await bcrypt.hash(password, 10)
-        const userId = registerUser(username, hashedPassword)
+        await registerUser(username, hashedPassword)
 
         res.status(201).json({ success: true, message: 'User registered successfully' })
     } catch (error) {
@@ -64,7 +64,7 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body
-        const user = getUser(username)
+        const user = await getUser(username)
 
         if (!user) {
             return res.status(400).json({ success: false, error: 'User not found' })
@@ -93,9 +93,9 @@ app.post('/api/login', async (req, res) => {
 // and optionally protect backend routes. But backend protection is creating the real security.
 
 // Get all trades - Protected? Yes.
-app.get('/api/trades', authenticateToken, (req, res) => {
+app.get('/api/trades', authenticateToken, async (req, res) => {
     try {
-        const trades = getAllTrades()
+        const trades = await getAllTrades()
         res.json({ success: true, data: trades })
     } catch (error) {
         console.error('Error fetching trades:', error)
@@ -104,9 +104,9 @@ app.get('/api/trades', authenticateToken, (req, res) => {
 })
 
 // Get single trade
-app.get('/api/trades/:id', authenticateToken, (req, res) => {
+app.get('/api/trades/:id', authenticateToken, async (req, res) => {
     try {
-        const trade = getTrade(req.params.id)
+        const trade = await getTrade(req.params.id)
         if (!trade) {
             return res.status(404).json({ success: false, error: 'Trade not found' })
         }
@@ -118,11 +118,11 @@ app.get('/api/trades/:id', authenticateToken, (req, res) => {
 })
 
 // Create new trade
-app.post('/api/trades', authenticateToken, (req, res) => {
+app.post('/api/trades', authenticateToken, async (req, res) => {
     try {
         const tradeData = req.body
-        const id = createTrade(tradeData)
-        const newTrade = getTrade(id)
+        const id = await createTrade(tradeData)
+        const newTrade = await getTrade(id)
         res.status(201).json({ success: true, data: newTrade })
     } catch (error) {
         console.error('Error creating trade:', error)
@@ -131,13 +131,13 @@ app.post('/api/trades', authenticateToken, (req, res) => {
 })
 
 // Update trade
-app.put('/api/trades/:id', authenticateToken, (req, res) => {
+app.put('/api/trades/:id', authenticateToken, async (req, res) => {
     try {
-        const updated = updateTrade(req.params.id, req.body)
+        const updated = await updateTrade(req.params.id, req.body)
         if (!updated) {
             return res.status(404).json({ success: false, error: 'Trade not found' })
         }
-        const updatedTrade = getTrade(req.params.id)
+        const updatedTrade = await getTrade(req.params.id)
         res.json({ success: true, data: updatedTrade })
     } catch (error) {
         console.error('Error updating trade:', error)
@@ -146,9 +146,9 @@ app.put('/api/trades/:id', authenticateToken, (req, res) => {
 })
 
 // Delete trade
-app.delete('/api/trades/:id', authenticateToken, (req, res) => {
+app.delete('/api/trades/:id', authenticateToken, async (req, res) => {
     try {
-        const deleted = deleteTrade(req.params.id)
+        const deleted = await deleteTrade(req.params.id)
         if (!deleted) {
             return res.status(404).json({ success: false, error: 'Trade not found' })
         }
@@ -161,27 +161,27 @@ app.delete('/api/trades/:id', authenticateToken, (req, res) => {
 
 // --- Rules Routes ---
 
-app.get('/api/rules', authenticateToken, (req, res) => {
+app.get('/api/rules', authenticateToken, async (req, res) => {
     try {
-        const rules = getAllRules()
+        const rules = await getAllRules()
         res.json({ success: true, data: rules })
     } catch (error) {
         res.status(500).json({ success: false, error: error.message })
     }
 })
 
-app.post('/api/rules', authenticateToken, (req, res) => {
+app.post('/api/rules', authenticateToken, async (req, res) => {
     try {
-        const id = addRule(req.body)
+        const id = await addRule(req.body)
         res.status(201).json({ success: true, data: { id, ...req.body } })
     } catch (error) {
         res.status(500).json({ success: false, error: error.message })
     }
 })
 
-app.delete('/api/rules/:id', authenticateToken, (req, res) => {
+app.delete('/api/rules/:id', authenticateToken, async (req, res) => {
     try {
-        const deleted = deleteRule(req.params.id)
+        const deleted = await deleteRule(req.params.id)
         if (deleted) {
             res.json({ success: true })
         } else {
